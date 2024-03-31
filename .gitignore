@@ -158,3 +158,26 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+web_scraping/.DS_Store
+valid_proxies.txt
+.DS_Store
+web_scraping/scrapers/.DS_Store
+web_scraping/scrapers/Free_Proxy_List.csv
+web_scraping/scrapers/get_proxy.py
+web_scraping/scrapers/proxy_list.txt
+web_scraping/scrapers/smth/avito_content.json
+web_scraping/scrapers/smth/avito-parser.py
+web_scraping/scrapers/smth/decoded.json
+web_scraping/scrapers/smth/decoder.py
+web_scraping/scrapers/smth/finall_decoded.json
+web_scraping/scrapers/smth/finall.json
+web_scraping/scrapers/smth/list_resident_proxyseller-2.txt
+web_scraping/scrapers/smth/list_resident_proxyseller-3.txt
+web_scraping/scrapers/smth/list_resident_proxyseller-5.txt
+web_scraping/scrapers/smth/loaded.json
+web_scraping/scrapers/smth/m_avito.json
+web_scraping/scrapers/smth/proxyfromcsv.py
+web_scraping/scrapers/smth/scrape-proxy.py
+web_scraping/scrapers/smth/teset.py
+web_scraping/scrapers/smth/test.py
+web_scraping/scrapers/smth/valid_proxies.txt
