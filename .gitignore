@@ -181,3 +181,10 @@ web_scraping/scrapers/smth/scrape-proxy.py
 web_scraping/scrapers/smth/teset.py
 web_scraping/scrapers/smth/test.py
 web_scraping/scrapers/smth/valid_proxies.txt
+new_output.csv
+output.csv
+new_urls.txt
+response_size.txt
+Untitled.ipynb
+urls.txt
+avito_content.json
