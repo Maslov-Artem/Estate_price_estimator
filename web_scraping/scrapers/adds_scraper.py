@@ -55,10 +55,7 @@ async def fetch_data(session: CloudflareScraper, url: str, writer: csv.DictWrite
     """
     for attempt in range(retry_attempts):
         try:
-            proxies = ['http://661a66002b:bb68065ca2@95.31.211.120:30848',
-                       'http://MTdPVT:1vaBRr@46.161.44.120:9252',
-                       'http://MTdPVT:1vaBRr@46.161.47.209:9262',
-                       'http://gJkm1m:Z4NDKQ@46.161.46.33:9003',
+            proxies = [
                        ]
             proxy = np.random.choice(proxies, p=[0.4, 0.2, 0.2, 0.2])
             if proxy == ['http://661a66002b:bb68065ca2@95.31.211.120:30848']:
