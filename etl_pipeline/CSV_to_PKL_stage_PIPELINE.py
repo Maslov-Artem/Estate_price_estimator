@@ -269,7 +269,134 @@ preprocessor = Pipeline(
     ])
 
 ###########################################################################################################################################################################################
+#
+#
+#
+#
+#
+#stage 2 stage 2 stagw 2
+#
+#
+#
+#
+#
+#
+########################################################################################################################################################################################
 
+
+class LargeImputers(BaseEstimator, TransformerMixin): 
+    
+    def fit(self, X, y=None):
+        return self
+        
+    def transform(self, X: pd.DataFrame, y=None):
+        X_copy = X.copy()
+
+        def rooms(area):
+            if area <= 40:
+                return 1
+            # elif area <= 80:
+            return 2
+            # elif area <= 120:
+            #     return 3
+            # return 4
+        
+        X_copy['room_count'] = [rooms(area) if room in [0,'0','False',False,'Нет данных'] or np.isnan(room) else room for area, room in X_copy[['total_area','room_count']].itertuples(index=False)]
+
+        height = X_copy.loc[X_copy.ceiling_height != 'Нет данных'].ceiling_height.astype(float).median()
+
+        def ceil(x):
+            if x == 'Нет данных':
+                return height
+            x = float(x)
+
+            if x <= 1.5:
+                return height
+            return x
+
+        X_copy['ceiling_height'] = X_copy['ceiling_height'].map(ceil)
+
+        metro_year = pd.read_pickle('metro_year.pkl')
+
+        def f(year):
+            if year == 'Нет данных':
+                return np.NaN
+            else:
+                return int(year)
+                
+        X_copy['build_year'] = X_copy['build_year'].map(f)
+
+        def ff(x):
+            return metro_year.loc[metro_year.index == x].iloc[0].item()
+        
+        
+        X_copy['build_year'] = [ff(station) if year <= 1500 or np.isnan(year) else year for year, station in X_copy[['build_year','metro_m']].itertuples(index=False)]
+
+        def repair_imp(x):
+            if x in ['Нет данных',0,'0',False] or pd.isna(x):
+                return 'no'
+            return x
+        
+        X_copy['repair_type'] = X_copy['repair_type'].map(repair_imp)
+        return X_copy
+
+
+
+class Material_IMP(BaseEstimator, TransformerMixin): 
+    
+    def fit(self, X, y=None):
+        return self
+        
+    def transform(self, X: pd.DataFrame, y=None):
+        X_copy = X.copy()
+
+        def typer(year):
+            if year <= 1963:
+                return 'brick'
+            elif year <= 1995:
+                return 'panel'
+            return 'monolith'
+        
+        X_copy['material_type'] = [typer(year) if mtype in [0,'0','False',False,'Нет данных'] or pd.isna(mtype) else mtype for year, mtype in X_copy[['build_year','material_type']].itertuples(index=False)]
+
+        return X_copy
+        
+
+
+last_stage = ['total_area','room_count','ceiling_height','build_year','metro_m','repair_type']
+
+first_step = ColumnTransformer(
+    transformers=[
+        ('diffrent_imputers', LargeImputers(), last_stage),
+    ],
+     verbose_feature_names_out = False,
+     remainder = 'passthrough')
+
+second_stage = ColumnTransformer(
+    transformers=[
+        ('drop', 'drop', ['publication_date']),
+        ('diffrent_imputers', Material_IMP(), ['build_year','material_type']),
+    ],
+     verbose_feature_names_out = False,
+     remainder = 'passthrough')
+
+
+preprocessor_stage_2 = Pipeline(
+    [
+        ('some large transformations', first_step),
+        ('drop and material', second_stage)
+    ]
+)
+
+
+
+
+#
+#
+#
+#
+#
+########################################################################################################################################################################################
 #1
 
 data = pd.read_csv('output.csv').drop_duplicates(subset=['id']).set_index('id')
@@ -288,8 +415,18 @@ data_pre.index = data.index.to_list()
 if 'room_count' not in data_pre.columns:
     data_pre['room_count'] = np.NaN
 
-#5 saving
+#5 stage 2
+
+
+data_pre_2 = preprocessor_stage_2.fit_transform(data_pre)
+
+
+
+#6 saving
+
+
+
 ct = datetime.datetime.now()
 title = f'data_{str(ct)[:str(ct).find(".")].replace(" ","_")}.pkl'
 
-data_pre.to_pickle(title)
+data_pre_2.to_pickle(title)
