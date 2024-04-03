@@ -145,13 +145,13 @@ class SmartDropper(BaseEstimator, TransformerMixin):
     def transform(self, X: pd.DataFrame, y=None):
         X_copy = X.copy()
         
-        drop_1 = ['offer_type', 'city','street', 'house','phone',
+        drop_1 = ['offer_type', 'city','street', 'house','phone','raion'
                'room_type', 'loggiasCount',
                'living_area', 'kitchen_area', 'all_rooms_area', 'house_material_type',
                'edit_time','house_material_bti', 'is_emergency', 'house_overlap_type', 'metro_x','metro_m','metro_y',
                'metro_time', 'travel_type', 'coord_house', 'metro_station']
 
-        drop_2 = ['offer_type', 'city','street', 'house', 'phone',
+        drop_2 = ['offer_type', 'city','street', 'house', 'phone','raion'
                'living_area', 'kitchen_area', 'all_rooms_area','house_material_type',
                'edit_time','house_material_bti', 'is_emergency', 'house_overlap_type', 'metro_x','metro_m','metro_y',
                'metro_time', 'travel_type', 'coord_house', 'metro_station']
