@@ -1,16 +1,10 @@
-from fastapi import FastAPI, File, UploadFile, Depends
+from fastapi import FastAPI
 from pydantic import BaseModel
-from utils.model_funcs import f
+from utilspy.model_func import Result_Maker, Nummer 
+from utilspy.cian import findr
+from sklearn.base import BaseEstimator, TransformerMixin
+import pandas as pd
 
-def load_model(*args):
-
-
-    if len(args) == 4:
-
-        return args[0]*350000
-    return None
-
-model = None 
 app = FastAPI()
 
 
@@ -20,30 +14,59 @@ class FindClass(BaseModel):
     find_me: str
 
 class CianClass(BaseModel):
-    id : int
-    link : str
-    price : float
-    base : float
+        total_area : float
+        repair_type : str
+        lat : float
+        lan : float
+        metro_dist : float
+        metro : str
+        kremlin_dist : float
+        pred : float
+        real : float
+        link : str
 
    
 class Item(BaseModel):
-    square: str
+    square: int
     quality: str
     lat: float
-    lan: float 
+    lan: float
+
 
 class ClassifyClass(BaseModel):
-    classify_me: float
+    classify_me: str
+    metro_m : str
 
 # Load model at startup
 @app.on_event("startup")
 def startup_event():
-    global model
-    model = load_model
+    # global model
+    # model = load_model()
+    pass
 
 @app.get('/')
 def return_info():
     return 'Hello FastAPI'
+
+@app.post('/cian_id')
+def clf_text(data: FindClass):
+
+    json = findr(data.find_me)
+    
+    response = CianClass(
+        total_area = json['total_area'],
+        repair_type = json['repair_type'],
+        lat = json['lat'],
+        lan = json['lan'],
+        metro_dist= json['metro_dist'],
+        metro= json['metro'],
+        kremlin_dist = json['kremlin_dist'],
+        pred = json['pred'],
+        real = json['real'],
+        link = json['link'],
+        )
+
+    return response
 
 
 @app.post('/classify')
@@ -54,34 +77,17 @@ def classify(data: Item):
     lat = float(data.lat)
     lan = float(data.lan)
 
-    result = float(model(square, quality, lat, lan))
+    json = {'square':square,'quality':quality,'lat':lat,'lan':lan}
+
+    result = Result_Maker(json)
+
+
     response = ClassifyClass(
-        classify_me = result)
-
-    return response
-
-@app.post('/cian_id')
-def clf_text(data: FindClass):
-    id_ = int(data.find_me)
-
-    ###
-    ###
-    ###
-
-
-    link_ = f'cian.ru/sale/flat{id}'
-    price_ = 10
-    base_ = 12
- 
-    response = CianClass(
-        id = id_,
-        link = link_,
-        price= price_,
-        base= base_
+        classify_me = str(result[0]),
+        metro_m     = str(result[1])
         )
 
     return response
-
 
 ##### run from api folder:
 ##### uvicorn app.main:app

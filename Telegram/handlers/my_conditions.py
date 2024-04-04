@@ -30,7 +30,7 @@ class CondState(StatesGroup):
 async def cian_id(message: Message, state: FSMContext):
     await message.answer(
         text="Укажите примерную площадь: ",
-        reply_markup=None
+        reply_markup=ReplyKeyboardRemove()
     )
     await state.set_state(CondState.cond_1)
 
@@ -51,47 +51,46 @@ async def cond_answer(message: Message, state: FSMContext):
 
 @router.message(CondState.cond_2, F.text.in_(available_quality_names))
 async def cond_answer_2(message: Message, state: FSMContext):
-
-    await state.update_data(quality=message.text.lower())
+    await state.update_data(quality=dict_qual[message.text])
 
     await message.answer(
         text="Кидай локацию: адрес или булавка 📍",
-        reply_markup=None
+        reply_markup=ReplyKeyboardRemove()
     )
     await state.set_state(CondState.cond_3)
 
 @router.message(CondState.cond_3, F.location)
 async def handle_location(message: Message, state: FSMContext):
-    lati = message.location.latitude
-    loni = message.location.longitude
+    lat = message.location.latitude
+    lan = message.location.longitude
 
-    await state.update_data(lat=lati)
-    await state.update_data(lon=loni)
-
-    user_data = await state.get_data()
+    await state.update_data(lat=lat)
+    await state.update_data(lan=lan)
 
     user_data = await state.get_data()
     
     forward = {
         'square': user_data['square'],
                'quality':user_data['quality'],
-            #    'adress':user_data['adress'],
                'lat': user_data['lat'],
-               'lan': user_data['lon'],
+               'lan': user_data['lan'],
                }
 
 
     res = requests.post(url, json=forward)
-    res = json.loads(res.content)['classify_me']
+    res = json.loads(res.content)
 
-    reply = f'Справедливая стоимость данного объекта: {res}₽'
+    price = res['classify_me']
+    metro = res['metro_m']
+
+    reply = f'''Справедливая стоимость данного объекта: {price}₽.
+Станция метро: {metro}
+
+Если хотие проверить ещё один объект, то введите площадь:
+
+Вернуться назад:   /start'''
     await message.answer(reply)
-
-    await message.answer('/start')
-
-
-
-    await state.clear()
+    await state.set_state(CondState.cond_1)
 
 
 
@@ -104,39 +103,40 @@ async def cond_answer_3(message: Message, state: FSMContext):
         reply = 'Введите адрес еще раз или нажмите /cancel'
         await message.answer(reply)
 
-    lati, loni = coord_tg(place)
+    lat, lan = coord_tg(place)
 
     
 
 
-    await message.answer_location(latitude = lati , longitude = loni)
+    await message.answer_location(latitude = lat , longitude = lan)
 
-    await state.update_data(lat=lati)
-    await state.update_data(lon=loni)
-    await state.update_data(adress=message.text)
+    await state.update_data(lat=lat)
+    await state.update_data(lan=lan)
 
     user_data = await state.get_data()
     
     forward = {
         'square': user_data['square'],
                'quality':user_data['quality'],
-            #    'adress':user_data['adress'],
                'lat': user_data['lat'],
-               'lan': user_data['lon'],
+               'lan': user_data['lan'],
                }
 
 
     res = requests.post(url, json=forward)
-    res = json.loads(res.content)['classify_me']
+    res = json.loads(res.content)
 
-    reply = f'Справедливая стоимость данного объекта: {res}₽'
+    price = res['classify_me']
+    metro = res['metro_m']
+
+    reply = f'''Справедливая стоимость данного объекта: {price}₽.
+Станция метро: {metro}
+
+Если хотие проверить ещё один объект, то введите площадь:
+
+Вернуться назад:   /start'''
     await message.answer(reply)
-
-    await message.answer('/start')
-
-
-
-    await state.clear()
+    await state.set_state(CondState.cond_1)
 
 
 
@@ -145,12 +145,12 @@ async def cond_answer_3(message: Message, state: FSMContext):
 @router.message(CondState.cond_1,)
 async def food_chosen(message: Message, state: FSMContext):
 
-    await message.answer(f'Введите площадь ещё раз или нажмите \cancel')
+    await message.answer(f'Введите площадь ещё раз или нажмите /start')
 
 @router.message(CondState.cond_2)
 async def cond_answer_2(message: Message, state: FSMContext):
 
     await message.answer(
-        text="Что-то пошло не так :(\nОцените качество ремонта или нажмите \cancel:",
+        text="Что-то пошло не так :(\nОцените качество ремонта или нажмите /start:",
         reply_markup=make_row_keyboard(available_quality_names)
     )
