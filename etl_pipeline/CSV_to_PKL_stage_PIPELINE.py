@@ -17,6 +17,38 @@ sklearn.set_config(transform_output="pandas")
 import warnings
 warnings.filterwarnings('ignore')
 
+def strr(x):
+    x = x.lower()
+    x = x.replace('ё','е')
+    
+    for i in string.punctuation + 'iI':
+        x = x.replace(i, '')
+    
+    x = x.replace('зеленоград — ','')
+    x = x.replace('аэропорт внуково','внуково')
+    x = x.replace('бульвар генерала карбышева','народное ополчение')
+    x = x.replace('троицк','ольховая')
+    x = x.replace('ватутинки','ольховая')
+    x = x.replace('десна','ольховая')
+    x = x.replace('кедровая','ольховая')
+    x = x.replace('москватоварная','москва товарная')
+    x = x.replace('остров мечты','народное ополчение')
+    x = x.replace('карамышевская','народное ополчение')
+    x = x.replace('матвеевская','аминьевская')
+    x = x.replace('летово','ольховая')
+    x = x.replace('москвасити','деловой центр')
+    x = x.replace('звенигородская','кунцевская')
+    x = x.replace('бачуринская','ольховая')
+    x = x.replace('университет дружбы народов','югозападная')
+    x = x.replace('потапово','бунинская аллея')
+    x = x.replace('каспийская','царицыно')
+    x = x.replace('гольяново','щелковская')
+    x = x.replace('кавказский бульвар','царицыно')
+    x = x.replace('тютчевская','коньково')
+
+    x = x.strip()
+    return x
+
 
 try:
     url = 'https://www.cbr-xml-daily.ru/latest.js'
@@ -31,13 +63,18 @@ def dist(c1,c2):
     return dis.geodesic(c1, c2).km
 
 def dist_maker_df(df: pd.DataFrame):
-    dists = {'metro_dist': (0, 0),
+    dists = {'metro_dist': (0.0, 0.0),
  'domodedovo_dist': (55.425398, 37.892624),
  'sherem_dist': (55.979653, 37.414202),
  'kremlin_dist': (55.752004, 37.617734),
+             'moskva_city_dist': (55.749776, 37.536234),
+             'mgu_dist': (55.703589, 37.530797),
+             'nekrasovka_dist': (55.704123, 37.926320),
+             'strogino_dist': (55.800774, 37.416551),
  'izmaylovo_dist': (55.792827, 37.76225)}
     
     for place, coord in tqdm(dists.items()):
+        
         if place == 'metro_dist':
             
             df[place] = [dist(c1, c2) for c1, c2 in tqdm(df[['coord_house','coords']].itertuples(index=False))]
@@ -53,7 +90,8 @@ class Coord_imp(BaseEstimator, TransformerMixin):
         
     def transform(self, X: pd.DataFrame, y=None):
         X_copy = X.copy()
-        X_copy['coord_house'] = tuple(zip(X_copy['latitude'], X_copy['longitude']))
+        X_copy['coord_house'] = tuple(zip(X_copy['latitude'].astype(float), X_copy['longitude'].astype(float)))
+
         return X_copy
 
 class Metro_Names(BaseEstimator, TransformerMixin): 
@@ -80,35 +118,6 @@ class Metro_Normalizer(BaseEstimator, TransformerMixin):
         return self
         
     def transform(self, X: pd.DataFrame, y=None):
-        
-        def strr(x):
-            x = x.lower()
-            x = x.replace('ё','е')
-            
-            for i in string.punctuation + 'iI':
-                x = x.replace(i, '')
-            
-            x = x.replace('зеленоград — ','')
-            x = x.replace('аэропорт внуково','внуково')
-            x = x.replace('бульвар генерала карбышева','народное ополчение')
-            x = x.replace('троицк','ольховая')
-            x = x.replace('ватутинки','ольховая')
-            x = x.replace('десна','ольховая')
-            x = x.replace('кедровая','ольховая')
-            x = x.replace('москватоварная','москва товарная')
-            x = x.replace('остров мечты','народное ополчение')
-            x = x.replace('карамышевская','народное ополчение')
-            x = x.replace('матвеевская','аминьевская')
-            x = x.replace('летово','ольховая')
-            x = x.replace('москвасити','деловой центр')
-            x = x.replace('звенигородская','кунцевская')
-            x = x.replace('бачуринская','ольховая')
-            x = x.replace('университет дружбы народов','югозападная')
-            x = x.replace('потапово','бунинская аллея')
-            x = x.replace('каспийская','царицыно')
-        
-            x = x.strip()
-            return x
         
         X_copy = X.copy()
         metro_copy = metro.copy()
@@ -145,15 +154,15 @@ class SmartDropper(BaseEstimator, TransformerMixin):
     def transform(self, X: pd.DataFrame, y=None):
         X_copy = X.copy()
         
-        drop_1 = ['offer_type', 'city','street', 'house','phone','raion'
+        drop_1 = ['offer_type', 'city','street', 'house','phone','raion',
                'room_type', 'loggiasCount',
                'living_area', 'kitchen_area', 'all_rooms_area', 'house_material_type',
-               'edit_time','house_material_bti', 'is_emergency', 'house_overlap_type', 'metro_x','metro_m','metro_y',
+               'edit_time','house_material_bti', 'is_emergency', 'house_overlap_type', 'metro_x','metro_y',
                'metro_time', 'travel_type', 'coord_house', 'metro_station']
 
-        drop_2 = ['offer_type', 'city','street', 'house', 'phone','raion'
+        drop_2 = ['offer_type', 'city','street', 'house', 'phone','raion',
                'living_area', 'kitchen_area', 'all_rooms_area','house_material_type',
-               'edit_time','house_material_bti', 'is_emergency', 'house_overlap_type', 'metro_x','metro_m','metro_y',
+               'edit_time','house_material_bti', 'is_emergency', 'house_overlap_type', 'metro_x','metro_y',
                'metro_time', 'travel_type', 'coord_house', 'metro_station']
 
         
@@ -188,16 +197,19 @@ class Some_transformations(BaseEstimator, TransformerMixin):
         X_copy['is_apartment'] = X_copy['is_apartment'].map(apartment)
 
         cur = {'rub':1,
-                'rur':1,
-                'usd': usd,
-                'eur' : eur,
-                'euro' : eur}
+                   'rur':1,
+                  'usd': usd,
+                  'eur' : eur,
+                  'euro' : eur}
         
         X_copy['currency'] = X_copy['currency'].map(cur)
-        X_copy['price'] = X_copy['price'] *  X_copy['currency']
+        X_copy['price'] = X_copy['price'].astype(float) *  X_copy['currency'].astype(float)
             
 
         return X_copy
+
+
+
 
 #########################################################################################################################################################################################
 
@@ -266,7 +278,8 @@ preprocessor = Pipeline(
         ('smart_dropper', fifth_step),
         ('little_transforms', sixth_step),
         ('dropper_2', seventh_step)
-    ])
+    ]
+)
 
 ###########################################################################################################################################################################################
 #
@@ -282,8 +295,6 @@ preprocessor = Pipeline(
 #
 #
 ########################################################################################################################################################################################
-
-
 class LargeImputers(BaseEstimator, TransformerMixin): 
     
     def fit(self, X, y=None):
@@ -295,13 +306,17 @@ class LargeImputers(BaseEstimator, TransformerMixin):
         def rooms(area):
             if area <= 40:
                 return 1
-            # elif area <= 80:
-            return 2
-            # elif area <= 120:
-            #     return 3
-            # return 4
+            elif area <= 80:
+                return 2
+            elif area <= 120:
+                return 3
+            elif area <= 160:
+                return 4
+            return 5
         
-        X_copy['room_count'] = [rooms(area) if room in [0,'0','False',False,'Нет данных'] or np.isnan(room) else room for area, room in X_copy[['total_area','room_count']].itertuples(index=False)]
+        X_copy['total_area'] = X_copy['total_area'].astype(float)
+        
+        X_copy['room_count'] = [rooms(area) if np.isnan(room) or room in [0,'0','False',False,'Нет данных'] else room for area, room in X_copy[['total_area','room_count']].itertuples(index=False)]
 
         height = X_copy.loc[X_copy.ceiling_height != 'Нет данных'].ceiling_height.astype(float).median()
 
@@ -316,8 +331,6 @@ class LargeImputers(BaseEstimator, TransformerMixin):
 
         X_copy['ceiling_height'] = X_copy['ceiling_height'].map(ceil)
 
-        metro_year = pd.read_pickle('metro_year.pkl')
-
         def f(year):
             if year == 'Нет данных':
                 return np.NaN
@@ -327,10 +340,12 @@ class LargeImputers(BaseEstimator, TransformerMixin):
         X_copy['build_year'] = X_copy['build_year'].map(f)
 
         def ff(x):
+            if x == 'боровицкая':
+                x = 'арбатская'
             return metro_year.loc[metro_year.index == x].iloc[0].item()
         
         
-        X_copy['build_year'] = [ff(station) if year <= 1500 or np.isnan(year) else year for year, station in X_copy[['build_year','metro_m']].itertuples(index=False)]
+        X_copy['build_year'] = [ff(station) if year <= 1500 or np.isnan(year) or year in ['Нет данных ',0,'0',False] else year for year, station in X_copy[['build_year','metro_m']].itertuples(index=False)]
 
         def repair_imp(x):
             if x in ['Нет данных',0,'0',False] or pd.isna(x):
@@ -360,6 +375,24 @@ class Material_IMP(BaseEstimator, TransformerMixin):
         X_copy['material_type'] = [typer(year) if mtype in [0,'0','False',False,'Нет данных'] or pd.isna(mtype) else mtype for year, mtype in X_copy[['build_year','material_type']].itertuples(index=False)]
 
         return X_copy
+
+
+class Okrug_Normalizer(BaseEstimator, TransformerMixin): 
+    
+    def fit(self, X, y=None):
+        return self
+        
+    def transform(self, X: pd.DataFrame, y=None):
+        X_copy = X.copy()
+
+        def func(station):
+            okr = metro_okrug.loc[metro_okrug.metro_m == station].new_okrug.to_list()[0]
+            if type(okr)==str:
+                return okr
+            return okr[0]
+
+        X_copy.okrug = [func(station) if "АО" not in distr else distr for station, distr in X_copy[['metro_m','okrug']].itertuples(index=False)]
+        return X_copy
         
 
 
@@ -376,6 +409,7 @@ second_stage = ColumnTransformer(
     transformers=[
         ('drop', 'drop', ['publication_date']),
         ('diffrent_imputers', Material_IMP(), ['build_year','material_type']),
+        ('okrug_norm', Okrug_Normalizer(), ['okrug','metro_m']),
     ],
      verbose_feature_names_out = False,
      remainder = 'passthrough')
@@ -389,8 +423,9 @@ preprocessor_stage_2 = Pipeline(
 )
 
 
-
-
+metro = pd.read_pickle('metro.pkl')
+metro_year = pd.read_pickle('metro_year.pkl')
+metro_okrug = pd.read_pickle('metro_okrug.pkl')
 #
 #
 #
@@ -403,28 +438,22 @@ data = pd.read_csv('output.csv').drop_duplicates(subset=['id']).set_index('id')
 
 #2
 
-metro = pd.read_pickle('metro.pkl')
-
-#3 preprocessor
-
 data_pre = preprocessor.fit_transform(data)
 data_pre.index = data.index.to_list()
 
-#4 making 27 columns
+#3 making 28 columns
 
 if 'room_count' not in data_pre.columns:
     data_pre['room_count'] = np.NaN
 
-#5 stage 2
+#4 stage 2
 
 
 data_pre_2 = preprocessor_stage_2.fit_transform(data_pre)
 
 
 
-#6 saving
-
-
+#5 saving
 
 ct = datetime.datetime.now()
 title = f'data_{str(ct)[:str(ct).find(".")].replace(" ","_")}.pkl'
