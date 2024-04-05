@@ -1,10 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from utilspy.model_func import Result_Maker, Nummer 
 from utilspy.cian import findr
-from sklearn.base import BaseEstimator, TransformerMixin
 import pandas as pd
-
+from utilspy.model_func import Result_Maker
 app = FastAPI()
 
 
@@ -81,13 +79,14 @@ def classify(data: Item):
 
     result = Result_Maker(json)
 
-
     response = ClassifyClass(
         classify_me = str(result[0]),
-        metro_m     = str(result[1])
+        metro_m     = str(result[-1])
         )
 
     return response
 
 ##### run from api folder:
 ##### uvicorn app.main:app
+##### export PYTHONPATH=${PYTHONPATH}:/home/alexey-kamaev/dsElbrus/FP/API
+##### export PYTHONPATH=${PYTHONPATH}:API
