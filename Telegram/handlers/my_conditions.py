@@ -14,7 +14,7 @@ from funcs.const import *
 
 from keyboards.simple_row import make_row_keyboard
 
-
+url_m = url + 'classify'
 
 
 router = Router()
@@ -77,11 +77,11 @@ async def handle_location(message: Message, state: FSMContext):
                }
 
 
-    res = requests.post(url, json=forward)
-    res = json.loads(res.content)
+    res = requests.post(url_m, json=forward)
+    back = json.loads(res.content)
 
-    price = res['classify_me']
-    metro = res['metro_m']
+    price = back['classify_me']
+    metro = back['metro_m']
 
     reply = f'''Справедливая стоимость данного объекта: {price}₽.
 Станция метро: {metro}
@@ -123,11 +123,11 @@ async def cond_answer_3(message: Message, state: FSMContext):
                }
 
 
-    res = requests.post(url, json=forward)
-    res = json.loads(res.content)
+    res = requests.post(url_m, json=forward)
+    back = json.loads(res.content)
 
-    price = res['classify_me']
-    metro = res['metro_m']
+    price = back['classify_me']
+    metro = back['metro_m']
 
     reply = f'''Справедливая стоимость данного объекта: {price}₽.
 Станция метро: {metro}

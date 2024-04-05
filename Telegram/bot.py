@@ -10,6 +10,9 @@ from handlers import my_conditions, cian_id_search, base, random
 TOKEN=config.bot_token.get_secret_value()
 
 
+
+
+
 async def main(TOKEN=TOKEN):
 
     bot = Bot(token=TOKEN)

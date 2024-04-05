@@ -11,6 +11,6 @@ COPY ./utilspy /code/utilspy
 COPY ./data /code/data
 
 
-EXPOSE 8000
+EXPOSE 8400
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8400", "--reload"]

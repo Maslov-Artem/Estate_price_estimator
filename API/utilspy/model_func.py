@@ -48,9 +48,11 @@ filename_pipe = 'data/pipeline_ltl.pkl'
 
 filename_model = 'data/model_ltl.pkl'
 
+ex_filename = 'data/explainer.bz2'
+
 metro_path = 'data/metro_model.pkl'
 
-y_mean = 15000000
+y_mean = 18_500_000
 
 
 def dist(c1,c2):
@@ -64,7 +66,7 @@ def dist_maker_df(df: pd.DataFrame, Y):
         df[place] = [dist(c1, coord) for c1 in Y]
 
 
-ex_filename = 'data/explainer.sav'
+
 def image_to_byte_array(image: Image) -> bytes:
   imgByteArr = io.BytesIO()
 
@@ -74,14 +76,13 @@ def image_to_byte_array(image: Image) -> bytes:
   return imgByteArr
 
 
-
 def Result_Maker(json):
-    shap.initjs()
 
     metro = pd.read_pickle(metro_path)
     model = joblib.load(open(filename_model, 'rb'))
     pipe = joblib.load(open(filename_pipe, 'rb'))
-    # explainer = pickle.load(open(ex_filename, 'rb'))
+    # explainer = joblib.load(open(ex_filename, 'rb'))
+    # ml_pipeline = joblib.load(open(filename_ml_pipe, 'rb'))
 
     X = pd.DataFrame(json, index=[0])
     X = X.rename(columns={'square':'total_area','quality':'repair_type','lat':'latitude','lan':'longitude'})
@@ -93,30 +94,23 @@ def Result_Maker(json):
 
     metro['dist'] = [dist(c, Y) for c in metro.coords]
     metro_m = metro[metro['dist'] == min(metro['dist'])].iloc[0,3]
-
     X['metro_m'] = metro_m
 
-    X[['latitude','longitude','total_area','moskva_city_dist','kremlin_dist']] =\
-        X[['latitude','longitude','total_area','moskva_city_dist','kremlin_dist']].astype(float)
     X = X[['latitude','longitude','total_area','moskva_city_dist','kremlin_dist','repair_type','metro_m']]
-
     # X_SHAP = X[['latitude','longitude','total_area','moskva_city_dist','kremlin_dist','repair_type','metro_m']].round(2)
+
+    
     
     X_pred = pipe.transform(X)
 
+    X_pred = pd.DataFrame(X_pred).rename(columns={0:'repair_type',1:'metro_m',2:'latitude',3:'longitude',4:'total_area',5:'moskva_city_dist',6:'kremlin_dist'})
 
-    # X_pred = pd.DataFrame(X_pred).rename(columns={0:'repair_type',1:'metro_m',2:'total_area',3:'moskva_city_dist',4:'kremlin_dist',5:'latitude',6:'longitude'})
-    # X_pred = X_pred[['latitude','longitude','total_area','moskva_city_dist','kremlin_dist','repair_type','metro_m']]
-
-    result = int(np.round(model.predict(X_pred),-5)[0])
-
+    
+    result = int(np.round(model.predict(X_pred),-4)[0])
     # shap_v = explainer.shap_values(X_pred)
-
     # image = shap.force_plot(y_mean, shap_v, X_SHAP, matplotlib=True,text_rotation=30, contribution_threshold=0.1, show=False)
     # image.savefig('s.png')
-    
-
 
     # bytes_ = image_to_byte_array(Image.open('s.png'))
 
-    return result, metro_m
+    return result, metro_m#, bytes_, explainer

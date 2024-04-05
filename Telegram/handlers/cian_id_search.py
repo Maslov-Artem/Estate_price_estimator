@@ -8,6 +8,8 @@ from custom_filtrs.custom import ID_Filter
 from funcs.cian_m import gimi_smth
 from funcs.const import *
 
+url_c = url+'cian_id'
+
 router = Router()
 
 
@@ -36,7 +38,7 @@ async def cian_answer(message: Message, state: FSMContext):
 
 
 
-    res = requests.post(url_cian, json=json)
+    res = requests.post(url_c, json=json)
     json = res.json()
 
     if str(json['pred']) == '-1.0':

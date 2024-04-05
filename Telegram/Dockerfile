@@ -1,5 +1,11 @@
-FROM python:3.11.6
-ENV TOKEN='token from @BotFather'
+FROM python:3.11
+
+WORKDIR /code
+
 COPY . .
+
 RUN pip install -r requirements.txt
-ENTRYPOINT [ "python", "test.py" ]
+
+EXPOSE 8500
+
+ENTRYPOINT [ "python", "bot.py" ]
