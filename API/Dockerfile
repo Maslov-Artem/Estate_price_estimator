@@ -1,15 +1,10 @@
-FROM python:3.9
+FROM python:latest
 
-WORKDIR /code
+WORKDIR /api_code
 
-COPY ./requirements.txt /code/requirements.txt
+COPY . .
 
-RUN pip install --no-cache-dir -r /code/requirements.txt
-
-COPY ./app /code/app
-COPY ./utilspy /code/utilspy
-COPY ./data /code/data
-
+RUN pip install --no-cache-dir -r /api_code/requirements.txt
 
 EXPOSE 8400
 
