@@ -6,9 +6,16 @@ from pydantic import BaseModel
 from funcions.cian import findr
 from funcions.model_func import Result_Maker
 
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[""],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],)
 
 
 
@@ -104,7 +111,7 @@ class ClassifyClass(BaseModel):
 
 
 @app.post('/classify_max')
-def classify(data: ItemMax):
+def classify_max(data: ItemMax):
 
     total_area = int(data.total_area)
     repair_type = data.repair_type
