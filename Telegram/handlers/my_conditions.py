@@ -88,7 +88,7 @@ async def handle_location(message: Message, state: FSMContext):
 
 Если хотие проверить ещё один объект, то введите площадь:
 
-Вернуться назад:   /start'''
+Вернуться назад:   /restart'''
     await message.answer(reply)
     await state.set_state(CondState.cond_1)
 
@@ -100,7 +100,7 @@ async def cond_answer_3(message: Message, state: FSMContext):
     place = message.text
 
     if coord_tg(place) is None:
-        reply = 'Введите адрес еще раз или нажмите /cancel'
+        reply = 'Введите адрес еще раз или нажмите /restart'
         await message.answer(reply)
 
     lat, lan = coord_tg(place)
@@ -134,7 +134,7 @@ async def cond_answer_3(message: Message, state: FSMContext):
 
 Если хотие проверить ещё один объект, то введите площадь:
 
-Вернуться назад:   /start'''
+Вернуться назад:   /restart'''
     await message.answer(reply)
     await state.set_state(CondState.cond_1)
 
@@ -145,12 +145,12 @@ async def cond_answer_3(message: Message, state: FSMContext):
 @router.message(CondState.cond_1,)
 async def food_chosen(message: Message, state: FSMContext):
 
-    await message.answer(f'Введите площадь ещё раз или нажмите /start')
+    await message.answer(f'Введите площадь ещё раз или нажмите /restart')
 
 @router.message(CondState.cond_2)
 async def cond_answer_2(message: Message, state: FSMContext):
 
     await message.answer(
-        text="Что-то пошло не так :(\nОцените качество ремонта или нажмите /start:",
+        text="Что-то пошло не так :(\nОцените качество ремонта или нажмите /restart:",
         reply_markup=make_row_keyboard(available_quality_names)
     )

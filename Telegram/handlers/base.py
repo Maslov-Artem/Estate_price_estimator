@@ -6,16 +6,17 @@ from aiogram.filters.command import Command
 from aiogram import Router, F
 from config_reader import config
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from funcs.const import *
 
+from keyboards.simple_row import make_row_keyboard
+from funcs.const import catches
 import logging
+
 
 
 
 router = Router()
 
 @router.message(Command("start"))
-@router.message(Command("restart"))
 @router.message(F.text.lower() == "start")
 async def proccess_command_start(message: Message, state: FSMContext):
     await state.clear()
@@ -23,19 +24,34 @@ async def proccess_command_start(message: Message, state: FSMContext):
     user_id = message.from_user.id
 
     text = f'''Привет, {user_name}!
+
 Это бот предназначен для оценки стоимости объекта недвижимости в Москве.
-Для продолжения работы необходимо ответить на пару вопросов.
-Также бот может оценить объявление на ЦИАНе. Для этого нужен всего лишь ID объявления.'''
+
+Бот работает в двух режимах:
+1. Оценка по ID/ссылке объявления;
+2. Оценка по вашим условиям;
+
+❤️'''
+
     
     logging.info(f'{user_name} {user_id} запустил бота')
-    kb = [
-        [KeyboardButton(text=catch_1)],
-        [KeyboardButton(text=catch_2)]
-    ]
-
-    keyboard = ReplyKeyboardMarkup(keyboard=kb, resize_keyboard=True,input_field_placeholder="...")
+    
+    keyboard = make_row_keyboard(catches)
 
     await message.answer(text=text)
+    await message.answer("Что выбираем?", reply_markup=keyboard)
+
+
+@router.message(Command("restart"))
+@router.message(F.text.lower() == "restart")
+async def proccess_command_start(message: Message, state: FSMContext):
+    await state.clear()
+    user_name = message.from_user.full_name
+    user_id = message.from_user.id
+    
+    logging.info(f'{user_name} {user_id} рестартнул бота')
+    
+    keyboard = make_row_keyboard(catches)
     await message.answer("Что выбираем?", reply_markup=keyboard)
 
 

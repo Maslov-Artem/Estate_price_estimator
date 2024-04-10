@@ -16,4 +16,4 @@ router = Router()
 
 @router.message()
 async def random(message: Message):
-    await message.answer('Кажется, вы написали что-то рандомное.\n42\n/start')
+    await message.answer('Кажется, вы написали что-то рандомное.\n42\n/restart')

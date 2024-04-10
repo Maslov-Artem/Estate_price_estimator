@@ -1,11 +1,9 @@
-FROM python:3.11
+FROM python:latest
 
 WORKDIR /code
 
 COPY . .
 
 RUN pip install -r requirements.txt
-
-EXPOSE 8500
 
 ENTRYPOINT [ "python", "bot.py" ]
