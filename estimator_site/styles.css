@@ -1,0 +1,15 @@
+.suggestion {
+    cursor: pointer;
+    padding: 5px;
+}
+
+#metroSuggestions {
+    position: absolute;
+    width: 100%;
+    max-height: 100px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    background-color: white;
+    display: none;
+}
+
