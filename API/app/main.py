@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 from funcions.cian import findr
-from funcions.model_func import Result_Maker
+from funcions.model_func import Result_Maker, Result_Maker_MAX
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -18,13 +18,6 @@ app.add_middleware(
     allow_headers=["*"],)
 
 
-
-# Load model at startup
-@app.on_event("startup")
-def startup_event():
-    # global model
-    # model = load_model()
-    pass
 
 @app.get('/')
 def return_info():
@@ -95,42 +88,59 @@ def classify(data: Item):
 
 
 #### /classify_max
-class ItemMax(BaseModel):
-    total_area: int
-    repair_type: str
-    lat: float
-    lan: float
+class Property(BaseModel):
+    total_area: float
+    room_count: int
     material_type: str
+    repair_type: str
     floor: int
     floors_count: int
-    building_year: int
+    metro: str
+    build_year: int
+    combined_wcs_count: int
+    ceiling_height: float
+    house_heating_supply: str
+    loggiascount: int
+    latitude: float
+    longitude: float
+    okrug: str
+    offer_type: str
+    city: str
+    raion: str
+    street: str
+    house: str
+    id: int
+    phone: str
+    flat_type: str
+    is_apartment: int
+    is_penthause: int
+    living_area: float
+    kitchen_area: float
+    all_rooms_area: float
+    price: int
+    currency: str
+    house_material_type: str
+    edit_time: str
+    publication_date: int
+    house_material_bti: str
+    is_emergency: int
+    house_overlap_type: str
+    metro_time: int
+    travel_type: str
 
-class ClassifyClass(BaseModel):
-    classify_me: str
-    metro_m : str
+class ClassifyMaxClass(BaseModel):
+    pred: int
 
 
-@app.post('/classify_max')
-def classify_max(data: ItemMax):
+@app.post("/classify_max")
+def classify_max(data: Property):
 
-    total_area = int(data.total_area)
-    repair_type = data.repair_type
-    lat = float(data.lat)
-    lan = float(data.lan)
+    price = Result_Maker_MAX(data)
 
-
-
-    # json = {'total_area':total_area,'repair_type':repair_type,'lat':lat,'lan':lan}
-
-    # result = Result_Maker(json)
-
-
-
-    # response = ClassifyClass(
-    #     classify_me = str(result[0]),
-    #     metro_m     = str(result[-1]))
+    response = ClassifyMaxClass(
+        pred = price)
     
-    return f'Пока что тут ничего нет. Но когда-нибудь...'
+    return response
 
 ##### run from api folder:
 ##### uvicorn app.main:app

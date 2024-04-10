@@ -6,7 +6,7 @@ from funcions.Parser import Parser
 
 from sklearn import set_config
 
-data_path    = './funcions/data/70000_base.pkl'
+data_path    = './funcions/data/90000_base.pkl'
 weights_path = './funcions/data/model.pkl'
 filename_pipe = './funcions/data/model_ltl.pkl'
 base_path = './funcions/data/cian_base.pkl'

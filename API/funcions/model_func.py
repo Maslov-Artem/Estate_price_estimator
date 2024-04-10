@@ -6,6 +6,7 @@ import numpy as np
 import pickle
 
 import geopy.distance as dis
+from funcions.entities import Preprocessor, Model
 
 from sklearn import set_config
 set_config(transform_output="pandas")
@@ -13,6 +14,8 @@ set_config(transform_output="pandas")
 filename_pipe = './funcions/data/model_ltl.pkl'
 
 metro_path = './funcions/data/metro_model.pkl'
+
+weights_path = './funcions/data/model.pkl'
 
 y_mean = 18_500_000
 
@@ -52,3 +55,28 @@ def Result_Maker(json):
     result = int(np.round(X_pred,-4)[0])
 
     return result, metro_m
+
+
+def Result_Maker_MAX(data):
+
+    set_config(transform_output="pandas")
+    
+    data = data.dict()
+
+    df = pd.DataFrame([data])
+    pr = Preprocessor(df)
+    pr.transform()
+    data = pr.to_pandas()
+
+
+    model = Model(data)
+
+    pred = model.load_predict(
+        data,
+        weights=weights_path)
+    
+
+    
+    result = int(np.round(pred,-4)[0])
+
+    return result

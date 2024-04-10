@@ -664,7 +664,6 @@ class Model():
         self.pipe = ml_pipeline
         self.pipe_ltl = ml_pipeline_l
 
-
         ss = StandardScaler()
         ss.fit(pd.DataFrame(np.log(self.Y)))
         
