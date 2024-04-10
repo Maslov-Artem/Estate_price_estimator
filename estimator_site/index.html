@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House price estimator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('https://cdn.esoft.digital/19201080/cluster/photos/a4/91/0648999536de5682c79cc60cbcbb1648fcfc91a4.jpeg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+        }
+        .form-label {
+            background-color: rgba(0, 0, 255, 0.5);
+            padding: 0.5rem;
+            border-radius: 5px;
+            color: white;
+        }
+        .required-field::after {
+            content: '*';
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center text-white mb-5">House price estimator</h1>
+        <form id="houseForm" method="POST">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="totalArea" class="form-label required-field">Общая площадь (в кв. м):</label>
+                        <input type="number" class="form-control" id="totalArea" name="total_area" placeholder="Введите общую площадь" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="numberOfRooms" class="form-label required-field">Количество комнат:</label>
+                        <input type="number" class="form-control" id="numberOfRooms" name="room_count" placeholder="Введите количество комнат" min="1" max="6" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="houseType" class="form-label">Тип дома:</label>
+                        <select class="form-select" id="houseType" name="material_type">
+                            <option value="brick">Кирпичный</option>
+                            <option value="monolith">Монолитный</option>
+                            <option value="panel">Панельный</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="renovationType" class="form-label">Вид ремонта:</label>
+                        <select class="form-select" id="renovationType" name="repair_type">
+                            <option value="no">Без ремонта</option>
+                            <option value="euro">Евро</option>
+                            <option value="design">Дизайнерский</option>
+                            <option value="cosmetic">Косметический</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="floor" class="form-label">Этаж:</label>
+                        <input type="number" class="form-control" id="floor" name="floor" placeholder="Введите этаж" min="-1" max="100">
+                    </div>
+                    <div class="mb-3">
+                        <label for="totalFloors" class="form-label">Этажей в доме:</label>
+                        <input type="number" class="form-control" id="totalFloors" name="floors_count" placeholder="Введите количество этажей в доме">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="metroStation" class="form-label required-field">Метро (название станции):</label>
+                        <input type="text" class="form-control" id="metroStation" name="metro" placeholder="Введите название станции метро" required>
+                        <!-- Suggestions will be shown here -->
+                        <div id="metroSuggestions"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="constructionYear" class="form-label">Год постройки:</label>
+                        <input type="number" class="form-control" id="constructionYear" name="build_year" placeholder="Введите год постройки" min="1800" max="2026">
+                    </div>
+                    <div class="mb-3">
+                        <label for="bathroomCount" class="form-label">Санузел:</label>
+                        <input type="number" class="form-control" id="bathroomCount" name="combined_wcs_count" placeholder="Введите количество санузлов" min="0" max="4">
+                    </div>
+                    <div class="mb-3">
+                        <label for="ceilingHeight" class="form-label">Высота потолков (в м):</label>
+                        <input type="number" class="form-control" id="ceilingHeight" name="ceiling_height" placeholder="Введите высоту потолков" min="2" max="6" step="0.01">
+                    </div>
+                    <div class="mb-3">
+                        <label for="heatingType" class="form-label">Отопление:</label>
+                        <select class="form-select" id="heatingType" name="house_heating_supply">
+                            <option value="itp">ИТП</option>
+                            <option value="autonomousBoiler">Автономный бойлер</option>
+                            <option value="central">Центральное</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="numberOfBalconies" class="form-label">Количество балконов:</label>
+                        <input type="number" class="form-control" id="numberOfBalconies" name="loggiascount" placeholder="Введите количество балконов" min="0" max="4">
+                    </div>
+               </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Расчитать стоимость</button>
+        </form>
+
+        <!-- Display area for received data -->
+        <div id="result" class="mt-5"></div>
+    </div>
+
+    <!-- Bootstrap JS (Optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+    <script src="metro_suggestion.js"></script>
+</body>
+</html>
