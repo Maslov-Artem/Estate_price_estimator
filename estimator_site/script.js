@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('houseForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent default form submission
+        event.preventDefault(); 
 
 
         const MetroStationsObject = {
@@ -358,7 +358,6 @@ document.addEventListener('DOMContentLoaded', function() {
  'Победа': [55.566111, 37.093056, 'ТАО (Троицкий)'],
  'Апрелевка': [55.550278, 37.0675, 'ТАО (Троицкий)']
         }
-        // Collect form data
         var formData = new FormData(document.getElementById('houseForm'));
         var jsonData = {};
 
@@ -367,13 +366,10 @@ document.addEventListener('DOMContentLoaded', function() {
         for (var pair of formData.entries()) {
             var floatValue = parseFloat(pair[1]);
             if (!isNaN(floatValue)) {
-                // If the value can be parsed as a float, store the float value
                 jsonData[pair[0]] = floatValue;
             } else if (pair[1] === '') {
-                // If the value is an empty string, store 0
                 jsonData[pair[0]] = 0;
             } else {
-                // Otherwise, store the original string value
                 jsonData[pair[0]] = pair[1];
             }
         }
@@ -387,7 +383,6 @@ document.addEventListener('DOMContentLoaded', function() {
             var latitude = metroStationCoords[0];
             var longitude = metroStationCoords[1];
 
-            // Add latitude and longitude to JSON data
             jsonData["latitude"] = latitude;
             jsonData["longitude"] = longitude;
             jsonData["okrug"] = okrug;
@@ -407,19 +402,21 @@ document.addEventListener('DOMContentLoaded', function() {
         jsonData["living_area"] = 0;
         jsonData["kitchen_area"] = 0;
         jsonData["all_rooms_area"] = 0;
-        jsonData["price"] = 0
+        jsonData["price"] = 1
         jsonData["currency"] = "rur"
         jsonData["house_material_type"] = "Нет данных"
         jsonData["edit_time"] = "2024-04-03 12:55:18.098"
-        jsonData["publication_data"] = 1711035688
+        jsonData["publication_date"] = 1711035688
         jsonData["house_material_bti"] = "Нет данных"
         jsonData["is_emergency"] = 0
         jsonData["house_overlap_type"] = "Нет данных"
         jsonData["metro_time"] = 0
         jsonData["travel_type"] = "Нет данных"
-        // Make POST request to your server endpoint
-        fetch('http://158.160.159.119:8400/classify_max', {
+        fetch('http://localhost:8400/classify_max', {
             method: 'POST',
+            headers: {
+        'Content-Type': 'application/json', 
+    },
             body: JSON.stringify(jsonData)
         })
         .then(response => {
@@ -429,8 +426,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            // Display received values on the webpage
-            displayReceivedValues(data);
+            displayReceivedValues(data, jsonData);
         })
         .catch(error => {
             console.error('There was a problem with your fetch operation:', error);
@@ -438,15 +434,33 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Function to display received values on the webpage
-function displayReceivedValues(data) {
-    // Example: Update the content of a div element with the received values
+
+function displayReceivedValues(data, jsonData) {
     var resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = ''; // Clear previous content
+    resultDiv.innerHTML = '';
+
+    var card = document.createElement('div');
+    card.classList.add('card', 'p-3', 'bg-light');
+
+    var cardBody = document.createElement('div');
+    cardBody.classList.add('card-body');
+
+    var cardTitle = document.createElement('h4');
+    cardTitle.classList.add('card-title');
+    cardTitle.textContent = 'House Price Estimation Result:';
+
+    cardBody.appendChild(cardTitle);
+
     for (var key in data) {
         var p = document.createElement('p');
-        p.textContent = key + ': ' + data[key];
-        resultDiv.appendChild(p);
+        p.classList.add('card-text');
+        p.style.fontSize = "1.2rem";
+        p.textContent = "Расчетная стоимость " + jsonData["room_count"] + "-комнатной квартиры в районе метро " + jsonData["metro"] + ': ' + data[key].toLocaleString('ru-Ru');
+        cardBody.appendChild(p);
     }
+
+    card.appendChild(cardBody);
+
+    resultDiv.appendChild(card);
 }
 

@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const metroSuggestions = document.getElementById('metroSuggestions');
     let highlightedIndex = -1;
 
-    // Mock array of metro station names
     const MetroStationsObject = {
         'Новокосино': (55.745113, 37.864052),
  'Новогиреево': (55.744444, 37.818333),
@@ -360,17 +359,11 @@ document.addEventListener('DOMContentLoaded', function() {
  'Апрелевка': (55.550278, 37.0675)
         };
 
-    // Function to show/hide the suggestion box
     function toggleSuggestions(show) {
         metroSuggestions.style.display = show ? 'block' : 'none';
     }
 
-    // Function to update the suggestion box with filtered suggestions
 
-    // Function to update the suggestion box with filtered suggestions
-    // Function to update the suggestion box with filtered suggestions
-
-// Function to update the suggestion box with filtered suggestions
 function updateSuggestions(suggestions) {
     metroSuggestions.innerHTML = '';
     suggestions.forEach(function(suggestion, index) {
@@ -378,21 +371,18 @@ function updateSuggestions(suggestions) {
         suggestionElement.classList.add('suggestion');
         suggestionElement.textContent = suggestion;
         suggestionElement.addEventListener('click', function() {
-            // Update the input field with the clicked suggestion's value
-            const suggestionValue = MetroStationsObject[suggestion]; // Assuming MetroStationsObject contains station names as keys and coordinates as values
+            const suggestionValue = MetroStationsObject[suggestion]; 
             metroStationInput.value = suggestionValue;
-            // Hide the suggestion box after selection
             toggleSuggestions(false);
             event.stopPropagation();
         });
         metroSuggestions.appendChild(suggestionElement);
     });
-    highlightedIndex = 0; // Set the first suggestion as highlighted
-    highlightSuggestion(); // Highlight the first suggestion
+    highlightedIndex = 0;
+    highlightSuggestion();
 }
 
 
-    // Event listener for input field to handle suggestions
     metroStationInput.addEventListener('focus', function() {
         const inputWidth = metroStationInput.offsetWidth;
         metroSuggestions.style.maxWidth = inputWidth + 'px';
@@ -400,13 +390,13 @@ function updateSuggestions(suggestions) {
         const suggestions = filterSuggestions(inputValue);
         if (suggestions.length > 0) {
             toggleSuggestions(true);
-            updateSuggestions(suggestions); // Show all suggestions
+            updateSuggestions(suggestions); 
         } else {
             toggleSuggestions(false);
         }
     });
 
-    // Event listener for Enter key to auto-complete suggestion
+    
     metroStationInput.addEventListener('keydown', function(event) {
         if (event.key === 'Enter' && metroSuggestions.style.display === 'block') {
             metroStationInput.value = metroSuggestions.childNodes[highlightedIndex].textContent;
@@ -415,7 +405,7 @@ function updateSuggestions(suggestions) {
             event.preventDefault();
             highlightedIndex = (highlightedIndex + 1) % metroSuggestions.childNodes.length;
             highlightSuggestion();
-            ensureHighlightedInView(); // Scroll to ensure highlighted suggestion is in view
+            ensureHighlightedInView(); 
         }
     });
 
@@ -426,7 +416,6 @@ function updateSuggestions(suggestions) {
         }
     });
 
-    // Function to filter suggestions based on input value
     function filterSuggestions(inputValue) {
         const filteredSuggestions = Object.keys(MetroStationsObject).filter(function(station) {
             return station.toLowerCase().startsWith(inputValue.toLowerCase());
@@ -434,7 +423,6 @@ function updateSuggestions(suggestions) {
         return filteredSuggestions;
     }
 
-    // Function to highlight the suggestion at the given index
     function highlightSuggestion() {
         const suggestions = metroSuggestions.querySelectorAll('.suggestion');
         suggestions.forEach(function(suggestion, index) {
@@ -448,7 +436,6 @@ function updateSuggestions(suggestions) {
         });
     }
 
-    // Function to ensure highlighted suggestion is in view
     function ensureHighlightedInView() {
         const suggestions = metroSuggestions.querySelectorAll('.suggestion');
         const highlightedSuggestion = suggestions[highlightedIndex];
@@ -461,7 +448,6 @@ function updateSuggestions(suggestions) {
         }
     }
 
-    // Set suggestion box width to match input field width
     metroStationInput.addEventListener('input', function() {
         metroSuggestions.style.width = metroStationInput.offsetWidth + 'px';
     const inputValue = metroStationInput.value;
