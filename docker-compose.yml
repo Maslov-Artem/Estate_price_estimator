@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  api:
+    build:
+      context: ./API
+      dockerfile: Dockerfile
+    ports:
+      - "8400:8400"
+    networks:
+      - API_network
+
+  bot:
+    build:
+      context: ./Telegram
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+    networks:
+      - API_network
+
+networks:
+  API_network:
+
